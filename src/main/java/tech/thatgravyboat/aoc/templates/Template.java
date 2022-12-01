@@ -2,15 +2,28 @@ package tech.thatgravyboat.aoc.templates;
 
 import java.util.List;
 
-public interface Template {
+public abstract class Template {
 
-    int day();
+    private List<String> input;
 
-    String partOne(List<String> input);
+    public void loadData(List<String> input) {
+        this.input = input;
+        onInputLoaded();
+    }
 
-    String partTwo(List<String> input);
+    public List<String> getInput() {
+        return input;
+    }
 
-    default void run() {
-        TemplateLoader.load(this);
+    protected void onInputLoaded() {
+        // Override this method to do something when the input is loaded
+    }
+
+    protected abstract String partOne();
+
+    protected abstract String partTwo();
+
+    protected void load(int day) {
+        TemplateLoader.load(day, this);
     }
 }
