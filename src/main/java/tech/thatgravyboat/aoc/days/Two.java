@@ -2,6 +2,7 @@ package tech.thatgravyboat.aoc.days;
 
 import tech.thatgravyboat.aoc.templates.Template;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Two extends Template {
@@ -18,11 +19,19 @@ public class Two extends Template {
         new Two().load(2);
     }
 
+    private final List<String[]> moves = new ArrayList<>();
+
+    @Override
+    public void loadData(List<String> input) {
+        for (String s : input) {
+            moves.add(s.split(" "));
+        }
+    }
+
     @Override
     public String partOne() {
         int score = 0;
-        for (String s : getInput()) {
-            String[] split = s.split(" ");
+        for (String[] split : moves) {
             score += switch (split[0]) {
                 case "A" -> switch (split[1]) {
                     case "X" -> ROCK + DRAW;
@@ -51,10 +60,8 @@ public class Two extends Template {
 
     @Override
     public String partTwo() {
-        List<String> input = getInput();
         int score = 0;
-        for (String s : input) {
-            String[] split = s.split(" ");
+        for (String[] split : moves) {
             score += switch (split[0]) {
                 case "A" -> switch (split[1]) {
                     case "X" -> SCISSORS + LOSE;
