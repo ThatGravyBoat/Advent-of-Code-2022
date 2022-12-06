@@ -35,4 +35,24 @@ public final class Util {
     public static void repeat(int i, Runnable runnable) {
         IntStream.range(0, i).forEachOrdered(i1 -> runnable.run());
     }
+
+    @SafeVarargs
+    public static <T> Set<T> intersection(Set<T> set, Set<T>... sets) {
+        Set<T> intersection = new HashSet<>(set);
+        for (Set<T> s : sets) {
+            intersection.retainAll(s);
+        }
+        return intersection;
+    }
+
+    public static <T> List<List<T>> groupLists(List<T> list, int x) {
+        List<List<T>> lists = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            if (i % x == 0) {
+                lists.add(new ArrayList<>(x));
+            }
+            lists.get(i / x).add(list.get(i));
+        }
+        return lists;
+    }
 }
