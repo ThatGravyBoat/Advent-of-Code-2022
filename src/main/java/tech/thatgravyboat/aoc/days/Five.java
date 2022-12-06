@@ -1,13 +1,13 @@
 package tech.thatgravyboat.aoc.days;
 
 import tech.thatgravyboat.aoc.templates.Template;
+import tech.thatgravyboat.aoc.utils.StringUtils;
+import tech.thatgravyboat.aoc.utils.Util;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Five extends Template {
 
@@ -31,10 +31,10 @@ public class Five extends Template {
     @Override
     public String partOne() {
         List<Stack<Character>> stacks = getInitialStack();
-        moves.forEach(move -> IntStream.range(0, move.amount).forEachOrdered(i -> move.push(stacks, move.pop(stacks))));
+        moves.forEach(move -> Util.repeat(move.amount, () -> move.push(stacks, move.pop(stacks))));
         return stacks.stream()
             .map(Stack::pop)
-            .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+            .collect(StringUtils.collectToString())
             .toString();
     }
 
@@ -43,25 +43,20 @@ public class Five extends Template {
         List<Stack<Character>> stacks = getInitialStack();
         moves.forEach(move -> IntStream.range(0, move.amount)
             .mapToObj(i -> move.pop(stacks))
-            .collect(Collectors.collectingAndThen(Collectors.toList(), list -> {
-                Collections.reverse(list);
-                return list;
-            }))
+            .collect(Util.collectReverseList())
             .forEach(c -> move.push(stacks, c))
         );
         return stacks.stream()
                 .map(Stack::pop)
-                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .collect(StringUtils.collectToString())
                 .toString();
     }
 
     private List<Stack<Character>> getInitialStack() {
-        List<ArrayList<Character>> stacks = IntStream.range(0, 9)
-            .mapToObj(i -> new ArrayList<Character>())
-            .toList();
+        List<List<Character>> stacks = Util.listsWithSize(9);
         for (String s : getInput()) {
             if (Character.isSpaceChar(s.charAt(0))) break;
-            String[] out = splitEveryX(s);
+            String[] out = StringUtils.splitEveryX(s, 4);
             for (int i = 0; i < out.length; i++) {
                 String line = out[i].replaceAll("[^A-Z]", "");
                 if (line.isBlank()) continue;
@@ -69,22 +64,9 @@ public class Five extends Template {
             }
         }
         return stacks.stream()
-            .peek(Collections::reverse)
-            .map(list -> {
-                Stack<Character> stack = new Stack<>();
-                stack.addAll(list);
-                return stack;
-            })
-            .toList();
-    }
-
-    private String[] splitEveryX(String input) {
-        int size = (input.length() + 3) / 4;
-        String[] output = new String[size];
-        for (int i = 0; i < size; i++) {
-            output[i] = input.substring(i * 4, Math.min(input.length(), (i + 1) * 4));
-        }
-        return output;
+                .peek(Collections::reverse)
+                .map(Util::newStack)
+                .toList();
     }
 
     public record Move(int amount, int from, int to) {
