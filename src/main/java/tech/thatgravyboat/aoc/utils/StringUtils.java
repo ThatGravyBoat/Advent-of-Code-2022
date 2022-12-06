@@ -1,10 +1,16 @@
 package tech.thatgravyboat.aoc.utils;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collector;
 
 public final class StringUtils {
 
     private StringUtils() {}
+
+    public static Set<Character> toSet(String s) {
+        return new HashSet<>(s.chars().mapToObj(c -> (char) c).toList());
+    }
 
     public static String[] splitEveryX(String input, int x) {
         int size = (input.length() + x - 1) / x;
