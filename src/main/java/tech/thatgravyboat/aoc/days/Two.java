@@ -21,6 +21,10 @@ public class Two extends Template {
 
     private final List<String[]> moves = new ArrayList<>();
 
+    /**
+     * Loop through the input and split the moves into an array of 2 strings with
+     * the first being the players move and the second being our input.
+     */
     @Override
     public void loadData(List<String> input) {
         for (String s : input) {

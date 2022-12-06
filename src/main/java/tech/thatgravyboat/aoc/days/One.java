@@ -14,6 +14,16 @@ public class One extends Template {
 
     private final List<Integer> elves = new ArrayList<>();
 
+    /**
+     * Loop through the input and if a line is empty that means we have reached the end of the section,
+     * and we add the count to the list.
+     * <br>
+     * If the line is not empty then we parse the line as an int and then add it to count.
+     * <br>
+     * We then sort it so that its from lowest to highest.
+     * <br>
+     * We then reverse it so that its from highest to lowest.
+     */
     @Override
     protected void onInputLoaded() {
         int count = 0;
@@ -29,11 +39,17 @@ public class One extends Template {
         Collections.reverse(this.elves);
     }
 
+    /**
+     * Return the top elf in the lists calories.
+     */
     @Override
     public String partOne() {
         return String.valueOf(this.elves.get(0));
     }
 
+    /**
+     * Return the top 3 elves in the list total calories.
+     */
     @Override
     public String partTwo() {
         return String.valueOf(this.elves.get(0) + this.elves.get(1) + this.elves.get(2));
