@@ -25,7 +25,7 @@ public final class Util {
                 .toList();
     }
 
-    public static <T> Collector<T, List<T>, List<T>> collectReverseList() {
+    public static <T> Collector<T, ?, List<T>> collectReverseList() {
         return Collectors.collectingAndThen(Collectors.toList(), list -> {
             Collections.reverse(list);
             return list;
