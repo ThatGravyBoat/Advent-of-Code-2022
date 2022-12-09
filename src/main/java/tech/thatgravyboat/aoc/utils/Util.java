@@ -2,6 +2,7 @@ package tech.thatgravyboat.aoc.utils;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,6 +24,12 @@ public final class Util {
         return IntStream.range(0, size)
                 .mapToObj(i -> (List<T>) new ArrayList<T>())
                 .toList();
+    }
+
+    public static <T> List<T> listFill(int amount, Supplier<T> supplier) {
+        List<T> list = new ArrayList<>();
+        Util.repeat(amount, () -> list.add(supplier.get()));
+        return list;
     }
 
     public static <T> Collector<T, ?, List<T>> collectReverseList() {
