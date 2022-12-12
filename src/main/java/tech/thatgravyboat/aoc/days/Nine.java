@@ -56,7 +56,12 @@ public class Nine extends Template {
 
         for (var move : moves) {
             Util.repeat(move.right(), () -> {
-                Vec2i next = head.toImmutable().relative(move.left());
+                Vec2i next = switch (move.left()) {
+                    case UP -> head.toImmutable().add(0, 1);
+                    case DOWN -> head.toImmutable().add(0, -1);
+                    case LEFT -> head.toImmutable().add(-1, 0);
+                    case RIGHT -> head.toImmutable().add(1, 0);
+                };
                 if (next.distSqrt(tail) > 1) {
                     tail.set(head);
                 }
@@ -94,7 +99,12 @@ public class Nine extends Template {
 
         for (var move : moves) {
             for (int i = 0; i < move.right(); i++) {
-                rope.get(0).relative(move.left());
+                switch (move.left()) {
+                    case UP -> rope.get(0).add(0, 1);
+                    case DOWN -> rope.get(0).add(0, -1);
+                    case LEFT -> rope.get(0).add(-1, 0);
+                    case RIGHT -> rope.get(0).add(1, 0);
+                }
 
                 for (int j = 1; j < rope.size(); j++) {
                     Vec2i head = rope.get(j - 1);
@@ -105,10 +115,10 @@ public class Nine extends Template {
                     if(head.xDiff(tail) == 2 || head.yDiff(tail) == 2) {
                         //We do it like this because we still need it to move on a 1 diff if another axis is 2
                         if (!head.isEqual(tail, Axis.X)) {
-                            tail.relative(head.x() > tail.x() ? Direction.RIGHT : Direction.LEFT);
+                            tail.add(head.x() > tail.x() ? new Vec2i(1, 0) : new Vec2i(-1, 0));
                         }
                         if (!head.isEqual(tail, Axis.Y)) {
-                            tail.relative(head.y() > tail.y() ? Direction.UP : Direction.DOWN);
+                            tail.add(head.y() > tail.y() ? new Vec2i(0, 1) : new Vec2i(0, -1));
                         }
                     }
                 }
