@@ -37,6 +37,10 @@ public class IntGrid {
         System.arraycopy(row, 0, grid[z], 0, row.length);
     }
 
+    public boolean isWithinBounds(int x, int z) {
+        return x >= 0 && z >= 0 && x < width && z < depth;
+    }
+
     public List<int[]> directionsLRTB(int x, int z) {
         return List.of(leftOf(x, z), rightOf(x, z), topOf(x, z), bottomOf(x, z));
     }
