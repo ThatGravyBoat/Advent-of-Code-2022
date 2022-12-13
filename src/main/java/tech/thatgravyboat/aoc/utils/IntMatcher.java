@@ -28,4 +28,12 @@ public class IntMatcher {
     public int group(int group) {
         return Integer.parseInt(matcher.group(group));
     }
+
+    public int group() {
+        return Integer.parseInt(matcher.group());
+    }
+
+    public int end() {
+        return matcher.end();
+    }
 }
