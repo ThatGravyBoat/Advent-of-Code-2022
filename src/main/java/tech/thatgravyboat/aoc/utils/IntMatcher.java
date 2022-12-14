@@ -1,7 +1,9 @@
 package tech.thatgravyboat.aoc.utils;
 
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class IntMatcher {
 
@@ -35,5 +37,34 @@ public class IntMatcher {
 
     public int end() {
         return matcher.end();
+    }
+
+    public IntMatchResult toMatchResult() {
+        return new IntMatchResult(matcher.toMatchResult());
+    }
+
+    public Stream<IntMatchResult> results() {
+        return matcher.results().map(IntMatchResult::new);
+    }
+
+    public Stream<IntMatchResult> allResults() {
+        return Stream.concat(Stream.of(toMatchResult()), results());
+    }
+
+    public static class IntMatchResult {
+
+        private final MatchResult result;
+
+        public IntMatchResult(MatchResult result) {
+            this.result = result;
+        }
+
+        public int group(int group) {
+            return Integer.parseInt(result.group(group));
+        }
+
+        public int group() {
+            return Integer.parseInt(result.group());
+        }
     }
 }
