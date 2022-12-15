@@ -46,10 +46,9 @@ public class Fifteen extends Template {
 
     @Override
     public String partTwo() {
-        final BigInteger minRange = BigInteger.ZERO;
         final BigInteger maxRange = BigInteger.valueOf(4000000);
 
-        for (int i = minRange.intValue(); i <= maxRange.intValue(); i++) {
+        for (int i = 0; i <= 4000000; i++) {
             int max = -1;
             for (Range range : getRange(i)) {
                 if (max == -1) {
@@ -60,8 +59,8 @@ public class Fifteen extends Template {
                             .multiply(BigInteger.valueOf(max + 1))
                             .add(BigInteger.valueOf(i))
                             .toString();
-                    } else if (max < range.max()) {
-                        max = range.max();
+                    } else {
+                        max = Math.max(max, range.max());
                     }
                 }
             }
