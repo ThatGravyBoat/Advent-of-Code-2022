@@ -38,6 +38,10 @@ public class Vec2i {
         return (int) Math.sqrt(distSqr(pos));
     }
 
+    public int distManhattan(Vec2i pos) {
+        return Math.abs(this.x - pos.x) + Math.abs(this.y - pos.y);
+    }
+
     public int xDiff(Vec2i pos) {
         return Math.abs(pos.x - x);
     }

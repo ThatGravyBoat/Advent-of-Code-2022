@@ -3,6 +3,7 @@ package tech.thatgravyboat.aoc.utils;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -10,6 +11,12 @@ import java.util.stream.IntStream;
 public final class Util {
 
     private Util() {}
+
+    public static List<IntMatcher> find(Pattern pattern, Collection<String> input) {
+        List<IntMatcher> matches = new ArrayList<>(input.size());
+        input.forEach(s -> matches.add(IntMatcher.find(pattern, s)));
+        return matches;
+    }
 
     public static <T> T make(T object, Consumer<T> consumer) {
         consumer.accept(object);
