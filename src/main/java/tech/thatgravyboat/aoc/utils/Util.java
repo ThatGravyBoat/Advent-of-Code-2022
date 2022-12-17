@@ -77,4 +77,11 @@ public final class Util {
         }
         return reversed;
     }
+
+    @SafeVarargs
+    public static <T> List<T> copyAndAdd(List<T> list, T... elements) {
+        List<T> copy = new ArrayList<>(list);
+        copy.addAll(Arrays.asList(elements));
+        return copy;
+    }
 }

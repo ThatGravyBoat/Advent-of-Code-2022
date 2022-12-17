@@ -15,4 +15,13 @@ public enum Direction {
     public Vec2i getNormal() {
         return normal;
     }
+
+    public Direction opposite() {
+        return switch (this) {
+            case UP -> DOWN;
+            case DOWN -> UP;
+            case LEFT -> RIGHT;
+            case RIGHT -> LEFT;
+        };
+    }
 }

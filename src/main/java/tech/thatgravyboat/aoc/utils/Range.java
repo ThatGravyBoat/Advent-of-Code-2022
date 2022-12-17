@@ -23,6 +23,10 @@ public class Range implements Comparable<Range> {
         return max;
     }
 
+    public Range offset(int offset) {
+        return new Range(min + offset, max + offset);
+    }
+
     public boolean contains(int i) {
         return i >= min && i <= max;
     }

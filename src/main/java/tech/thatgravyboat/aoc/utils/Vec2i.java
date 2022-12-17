@@ -15,6 +15,10 @@ public class Vec2i {
         return add(direction.getNormal());
     }
 
+    public Vec2i opposite(Direction direction) {
+        return add(direction.opposite().getNormal());
+    }
+
     public Vec2i add(Vec2i vec) {
         return new Vec2i(x + vec.x, y + vec.y);
     }
