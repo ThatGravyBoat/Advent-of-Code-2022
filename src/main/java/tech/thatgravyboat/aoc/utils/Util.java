@@ -2,6 +2,7 @@ package tech.thatgravyboat.aoc.utils;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
@@ -15,6 +16,12 @@ public final class Util {
     public static List<IntMatcher> find(Pattern pattern, Collection<String> input) {
         List<IntMatcher> matches = new ArrayList<>(input.size());
         input.forEach(s -> matches.add(IntMatcher.find(pattern, s)));
+        return matches;
+    }
+
+    public static <T> List<T> find(Pattern pattern, Collection<String> input, Function<IntMatcher, T> mapper) {
+        List<T> matches = new ArrayList<>(input.size());
+        input.forEach(s -> matches.add(mapper.apply(IntMatcher.find(pattern, s))));
         return matches;
     }
 
@@ -83,5 +90,22 @@ public final class Util {
         List<T> copy = new ArrayList<>(list);
         copy.addAll(Arrays.asList(elements));
         return copy;
+    }
+
+    public static <T> void bsf(T start, BsfConsumer<T> consumer) {
+        Set<T> visited = new HashSet<>();
+        Queue<T> queue = new LinkedList<>();
+        queue.add(start);
+
+        while (!queue.isEmpty()) {
+            T current = queue.poll();
+            if (visited.contains(current)) continue;
+            visited.add(current);
+            consumer.accept(current, queue);
+        }
+    }
+
+    public interface BsfConsumer<T> {
+        void accept(T t, Queue<T> queue);
     }
 }
