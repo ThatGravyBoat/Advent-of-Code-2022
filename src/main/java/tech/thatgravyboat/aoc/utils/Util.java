@@ -11,6 +11,8 @@ import java.util.stream.IntStream;
 
 public final class Util {
 
+    public static final Random RANDOM = new Random(System.currentTimeMillis());
+
     private Util() {}
 
     public static List<IntMatcher> find(Pattern pattern, Collection<String> input) {
@@ -107,5 +109,13 @@ public final class Util {
 
     public interface BsfConsumer<T> {
         void accept(T t, Queue<T> queue);
+    }
+
+    public static boolean chance(float chance) {
+        return chance >= 1 || RANDOM.nextFloat() < chance;
+    }
+
+    public static int product(int... ints) {
+        return Arrays.stream(ints).reduce(1, (a, b) -> a * b);
     }
 }
