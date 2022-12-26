@@ -20,19 +20,6 @@ public enum Direction3d {
         return normal;
     }
 
-    public Direction3d opposite() {
-        return switch (this) {
-            case UP -> DOWN;
-            case DOWN -> UP;
-
-            case SOUTH -> NORTH;
-            case NORTH -> SOUTH;
-
-            case WEST -> EAST;
-            case EAST -> WEST;
-        };
-    }
-
     public static Stream<Direction3d> stream() {
         return Stream.of(values());
     }

@@ -18,10 +18,6 @@ public class ConsoleOutput {
         return output + Color.RESET.foreground + Color.RESET.background;
     }
 
-    public void clear() {
-        output.setLength(0);
-    }
-
     public enum Color {
         RESET("\u001B[0m", "\u001B[49m"),
         BLACK("\u001B[30m", "\u001B[40m"),

@@ -18,17 +18,6 @@ public class CyclicalList<T> extends ArrayList<T> {
         return get(index++);
     }
 
-    public T previous() {
-        if (getIndex() < 0) {
-            set(size() - 1);
-        }
-        return get(index--);
-    }
-
-    public T current() {
-        return get(getIndex());
-    }
-
     public void set(int index) {
         this.index = index;
     }
@@ -37,7 +26,4 @@ public class CyclicalList<T> extends ArrayList<T> {
         return index;
     }
 
-    public boolean isFinished() {
-        return index >= size();
-    }
 }

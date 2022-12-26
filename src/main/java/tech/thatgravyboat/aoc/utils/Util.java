@@ -103,13 +103,6 @@ public final class Util {
         return reversed;
     }
 
-    @SafeVarargs
-    public static <T> Set<T> copyAndAdd(Set<T> list, T... elements) {
-        Set<T> copy = new HashSet<>(list);
-        copy.addAll(Arrays.asList(elements));
-        return copy;
-    }
-
     public static <T> void bsf(T start, BsfConsumer<T> consumer) {
         Set<T> visited = new HashSet<>();
         Queue<T> queue = new LinkedList<>();
