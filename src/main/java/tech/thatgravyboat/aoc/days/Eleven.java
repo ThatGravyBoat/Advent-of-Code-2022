@@ -22,7 +22,7 @@ public class Eleven extends Template {
 
     @Override
     public String partOne() {
-        return solve(20, new BigInteger("3"));
+        return solve(20, BigInteger.valueOf(3));
     }
 
     @Override
@@ -33,29 +33,30 @@ public class Eleven extends Template {
     private String solve(int rounds, BigInteger divisor) {
         var monkeys = getMonkeys();
         BigInteger lcm = monkeys.stream()
-            .map(Monkey::modulo)
-            .reduce(BigInteger.valueOf(1), (a, b) -> a.multiply(b.divide(a.gcd(b))));
+                .map(Monkey::modulo)
+                .reduce(BigInteger.valueOf(1), (a, b) -> a.multiply(b.divide(a.gcd(b))));
 
         Util.repeat(rounds, () -> {
             for (Monkey monkey : monkeys) {
                 monkey.items().stream()
-                    .map(monkey.operation::apply)
-                    .map(val -> val.mod(lcm))
-                    .map(val -> val.divide(divisor))
-                    .forEachOrdered(value -> monkey.addToNext(monkeys, value));
+                        .map(monkey.operation::apply)
+                        .map(val -> val.mod(lcm))
+                        .map(val -> val.divide(divisor))
+                        .forEachOrdered(value -> monkey.addToNext(monkeys, value));
                 monkey.items().clear();
             }
         });
 
         List<Long> list = monkeys.stream()
-            .map(Monkey::interactions)
-            .map(AtomicLong::get)
-            .sorted()
-            .collect(Util.collectReverseList());
+                .map(Monkey::interactions)
+                .map(AtomicLong::get)
+                .sorted()
+                .collect(Util.collectReverseList());
         return Long.toString(list.get(0) * list.get(1));
     }
 
-    public record Monkey(BigIntList items, BigInt2BigIntFunction operation, BigInteger modulo, int monkey1, int monkey2, AtomicLong interactions) {
+    public record Monkey(BigIntList items, BigInt2BigIntFunction operation, BigInteger modulo, int monkey1, int monkey2,
+                         AtomicLong interactions) {
 
         public void addToNext(List<Monkey> monkeys, BigInteger value) {
             monkeys.get(value.mod(modulo()).intValue() == 0 ? monkey1() : monkey2()).items().add(value);
@@ -80,12 +81,12 @@ public class Eleven extends Template {
             };
 
             monkeys.add(new Monkey(
-                items,
-                operation,
-                BigInteger.valueOf(intMatcher.group(4)),
-                intMatcher.group(5),
-                intMatcher.group(6),
-                new AtomicLong()
+                    items,
+                    operation,
+                    BigInteger.valueOf(intMatcher.group(4)),
+                    intMatcher.group(5),
+                    intMatcher.group(6),
+                    new AtomicLong()
             ));
         }
         return monkeys;

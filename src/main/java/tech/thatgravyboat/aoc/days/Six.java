@@ -9,16 +9,6 @@ public class Six extends Template {
         new Six().load(6);
     }
 
-    private String input;
-
-    /**
-     * Get the first line of the input
-     */
-    @Override
-    protected void onInputLoaded() {
-        this.input = getInput().get(0);
-    }
-
     /**
      * Run solve with distinct char length of 4
      */
@@ -41,8 +31,9 @@ public class Six extends Template {
      * Then return the offset + the distinct char length
      */
     private int solve(int length) {
+        final String input = getInput().get(0);
         int i = 0;
-        while (StringUtils.toSet(this.input.substring(i, i + length)).size() != length) {
+        while (StringUtils.toSet(input.substring(i, i + length)).size() != length) {
             i += 1;
         }
         return i + length;

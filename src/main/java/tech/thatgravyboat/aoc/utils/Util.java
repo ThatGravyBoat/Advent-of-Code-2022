@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -13,15 +14,31 @@ public final class Util {
 
     public static final Random RANDOM = new Random(System.currentTimeMillis());
 
-    private Util() {}
+    private Util() {
+    }
 
-    public static List<IntMatcher> find(Pattern pattern, Collection<String> input) {
-        List<IntMatcher> matches = new ArrayList<>(input.size());
-        input.forEach(s -> matches.add(IntMatcher.find(pattern, s)));
+    public static List<Matcher> find(Pattern pattern, Collection<String> input) {
+        return find(pattern, input, matcher -> matcher);
+    }
+
+    public static <T> List<T> find(Pattern pattern, Collection<String> input, Function<Matcher, T> mapper) {
+        List<T> matches = new ArrayList<>(input.size());
+        input.forEach(s -> {
+            Matcher matcher = pattern.matcher(s);
+            if (matcher.find()) {
+                matches.add(mapper.apply(matcher));
+            } else {
+                throw new IllegalArgumentException("No matches found for " + s);
+            }
+        });
         return matches;
     }
 
-    public static <T> List<T> find(Pattern pattern, Collection<String> input, Function<IntMatcher, T> mapper) {
+    public static List<IntMatcher> findInt(Pattern pattern, Collection<String> input) {
+        return findInt(pattern, input, matcher -> matcher);
+    }
+
+    public static <T> List<T> findInt(Pattern pattern, Collection<String> input, Function<IntMatcher, T> mapper) {
         List<T> matches = new ArrayList<>(input.size());
         input.forEach(s -> matches.add(mapper.apply(IntMatcher.find(pattern, s))));
         return matches;
@@ -59,11 +76,10 @@ public final class Util {
         IntStream.range(0, i).forEachOrdered(i1 -> runnable.run());
     }
 
-    @SafeVarargs
-    public static <T> Set<T> intersection(Set<T> set, Set<T>... sets) {
-        Set<T> intersection = new HashSet<>(set);
-        for (Set<T> s : sets) {
-            intersection.retainAll(s);
+    public static <T> Set<T> intersection(List<? extends Set<T>> sets) {
+        Set<T> intersection = new HashSet<>(sets.get(0));
+        for (int i = 1; i < sets.size(); i++) {
+            intersection.retainAll(sets.get(i));
         }
         return intersection;
     }
@@ -88,8 +104,8 @@ public final class Util {
     }
 
     @SafeVarargs
-    public static <T> List<T> copyAndAdd(List<T> list, T... elements) {
-        List<T> copy = new ArrayList<>(list);
+    public static <T> Set<T> copyAndAdd(Set<T> list, T... elements) {
+        Set<T> copy = new HashSet<>(list);
         copy.addAll(Arrays.asList(elements));
         return copy;
     }
@@ -107,15 +123,20 @@ public final class Util {
         }
     }
 
-    public interface BsfConsumer<T> {
-        void accept(T t, Queue<T> queue);
-    }
-
     public static boolean chance(float chance) {
         return chance >= 1 || RANDOM.nextFloat() < chance;
     }
 
     public static int product(int... ints) {
         return Arrays.stream(ints).reduce(1, (a, b) -> a * b);
+    }
+
+    public static int sum(int... ints) {
+        return Arrays.stream(ints).sum();
+    }
+
+    @FunctionalInterface
+    public interface BsfConsumer<T> {
+        void accept(T t, Queue<T> queue);
     }
 }

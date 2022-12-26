@@ -1,5 +1,7 @@
 package tech.thatgravyboat.aoc.days;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import tech.thatgravyboat.aoc.templates.Template;
 import tech.thatgravyboat.aoc.utils.IntMatcher;
 
@@ -21,7 +23,7 @@ public class Seven extends Template {
         new Seven().load(7);
     }
 
-    private final Directory root = new Directory(null, new LinkedHashMap<>(), new LinkedHashMap<>());
+    private final Directory root = new Directory(null);
 
     /**
      * Loop through the lines
@@ -30,13 +32,13 @@ public class Seven extends Template {
      * <br>
      * Check the first group if its running change directory, list directory, if a directory was listed, or if anything happens.
      * <br>
-     * If change directory then check group 2 and determine directory and set current to that directory.
+     * If change directory then check group 2 and determine directory and set value to that directory.
      * <br>
      * If list directory then do nothing as we assume stuff later on.
      * <br>
-     * If a directory was listed then check group 2 and determine directory and add it to the current directory.
+     * If a directory was listed then check group 2 and determine directory and add it to the value directory.
      * <br>
-     * If anything happens then check group 2 and determine file and add it to the current directory with group 1 as size.
+     * If anything happens then check group 2 and determine file and add it to the value directory with group 1 as size.
      */
     @Override
     protected void onInputLoaded() {
@@ -50,8 +52,9 @@ public class Seven extends Template {
                     case "/" -> root;
                     default -> current.directories.get(line.group(2));
                 };
-                case "$ ls" -> {}
-                case "dir" -> current.directories.put(line.group(2), new Directory(current, new LinkedHashMap<>(), new LinkedHashMap<>()));
+                case "$ ls" -> {
+                }
+                case "dir" -> current.directories.put(line.group(2), new Directory(current));
                 default -> current.files.put(line.group(2), intLine.group(1));
             }
         }
@@ -68,11 +71,10 @@ public class Seven extends Template {
      */
     @Override
     public String partOne() {
-        int total = root.stream()
-            .mapToInt(Directory::getTotalSize)
-            .filter(size -> size <= PART_ONE_SIZE)
-            .sum();
-        return String.valueOf(total);
+        return Integer.toString(root.stream()
+                .mapToInt(Directory::getTotalSize)
+                .filter(size -> size <= PART_ONE_SIZE)
+                .sum());
     }
 
     /**
@@ -87,16 +89,18 @@ public class Seven extends Template {
     @Override
     public String partTwo() {
         final int amountNeeded = NEED_UPDATE_SIZE - (FILE_SYSTEM_SIZE - root.getTotalSize());
-
-        int smallestDeletedDirectory = root.stream()
-            .mapToInt(Directory::getTotalSize)
-            .filter(size -> size >= amountNeeded)
-            .reduce(Math::min)
-            .orElseThrow();
-        return Integer.toString(smallestDeletedDirectory);
+        return Integer.toString(root.stream()
+                .mapToInt(Directory::getTotalSize)
+                .filter(size -> size >= amountNeeded)
+                .min()
+                .orElseThrow());
     }
 
-    public record Directory(Directory parent, Map<String, Directory> directories, Map<String, Integer> files) {
+    public record Directory(Directory parent, Map<String, Directory> directories, Object2IntMap<String> files) {
+
+        public Directory(Directory parent) {
+            this(parent, new LinkedHashMap<>(), new Object2IntOpenHashMap<>());
+        }
 
         public int getTotalSize() {
             return stream().mapToInt(Directory::getFileSize).sum();

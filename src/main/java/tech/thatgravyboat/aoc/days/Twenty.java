@@ -20,8 +20,8 @@ public class Twenty extends Template {
 
     @Override
     protected void onInputLoaded() {
-        for (int i = 0; i < getInput().size(); i++) {
-            sequence.add(new Line(Long.parseLong(getInput().get(i))));
+        for (String s : getInput()) {
+            sequence.add(new Line(Long.parseLong(s)));
         }
     }
 

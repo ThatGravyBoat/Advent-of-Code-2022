@@ -36,14 +36,15 @@ public class Eight extends Template {
     /**
      * Get all the directions from the point on the grid.
      * <br>
-     * Loop through all the directions and check if the number in the direction is less than or equal to the current number.
+     * Loop through all the directions and check if the number in the direction is less than or equal to the value number.
      * <br>
      * If it is, then the number is not visible.
      * <br>
      * If it isn't, then the number is visible.
      */
     private boolean isVisible(int x, int y, int value) {
-        directions: // I'm using a label here because I'm a bad person.
+        directions:
+        // I'm using a label here because I'm a bad person.
         for (int[] direction : grid.directionsLRTB(x, y)) {
             for (int i : direction) {
                 if (value <= i) {
@@ -67,7 +68,7 @@ public class Eight extends Template {
      * <br>
      * Loop through the direction and increase distance by 1.
      * <br>
-     * if the number in the direction is greater than the current number, then multiply the distance to the score.
+     * if the number in the direction is greater than the value number, then multiply the distance to the score.
      */
     private int getScenicScore(int x, int y, int value) {
         int score = 1;

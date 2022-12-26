@@ -1,6 +1,8 @@
 package tech.thatgravyboat.aoc.utils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A simple int grid.
@@ -85,9 +87,21 @@ public class IntGrid {
         }
     }
 
-    @FunctionalInterface
-    public interface IntGridConsumer {
-        void accept(int x, int y, int value);
+    public Stream<GridEntry> stream() {
+        List<GridEntry> entries = new ArrayList<>();
+        forEach((x, z, value) -> entries.add(new GridEntry(x, z, value)));
+        return entries.stream();
     }
 
+    @FunctionalInterface
+    public interface IntGridConsumer {
+        void accept(int x, int z, int value);
+    }
+
+    public record GridEntry(int x, int z, int value) {
+
+        public Vec2i toVec2i() {
+            return new Vec2i(x, z);
+        }
+    }
 }

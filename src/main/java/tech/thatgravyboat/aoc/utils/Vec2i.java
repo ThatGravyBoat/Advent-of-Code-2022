@@ -1,5 +1,6 @@
 package tech.thatgravyboat.aoc.utils;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Vec2i {
@@ -9,6 +10,18 @@ public class Vec2i {
     public Vec2i(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public static Vec2i of(int x, int y) {
+        return new Vec2i(x, y);
+    }
+
+    public Vec2i relative(List<Direction> directions) {
+        Vec2i vec = this;
+        for (Direction direction : directions) {
+            vec = vec.relative(direction);
+        }
+        return vec;
     }
 
     public Vec2i relative(Direction direction) {
@@ -31,31 +44,8 @@ public class Vec2i {
         return add(new Vec2i(axis == Axis.X ? value : 0, axis == Axis.Y ? value : 0));
     }
 
-
-    public int distSqr(Vec2i pos) {
-        int x = pos.x - this.x;
-        int y = pos.y - this.y;
-        return x * x + y * y;
-    }
-
-    public int distSqrt(Vec2i pos) {
-        return (int) Math.sqrt(distSqr(pos));
-    }
-
     public int distManhattan(Vec2i pos) {
         return Math.abs(this.x - pos.x) + Math.abs(this.y - pos.y);
-    }
-
-    public int xDiff(Vec2i pos) {
-        return Math.abs(pos.x - x);
-    }
-
-    public int yDiff(Vec2i pos) {
-        return Math.abs(pos.y - y);
-    }
-
-    public Vec2i.Mutable mutable() {
-        return new Vec2i.Mutable(x, y);
     }
 
     public Vec2i toImmutable() {
@@ -68,13 +58,6 @@ public class Vec2i {
 
     public int y() {
         return y;
-    }
-
-    public boolean isEqual(Vec2i vec, Axis axis) {
-        return switch (axis) {
-            case X -> x == vec.x;
-            case Y -> y == vec.y;
-        };
     }
 
     @Override

@@ -3,7 +3,8 @@ package tech.thatgravyboat.aoc.days;
 import tech.thatgravyboat.aoc.templates.Template;
 import tech.thatgravyboat.aoc.utils.IntMatcher;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.ToLongBiFunction;
 import java.util.regex.Matcher;
@@ -43,8 +44,7 @@ public class TwentyOne extends Template {
 
     @Override
     public String partOne() {
-        final Map<String, Long> values = parseInputs((id, value) -> value.value());
-        return Long.toString(values.get(ROOT));
+        return Long.toString(parseInputs((id, value) -> value.value()).get(ROOT));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class TwentyOne extends Template {
         boolean parsing = true;
         while (parsing) {
             parsing = false;
-            for (Map.Entry<String, Monkey> entry : monkeys.entrySet()) {
+            for (var entry : monkeys.entrySet()) {
                 if (values.containsKey(entry.getKey())) continue;
 
                 Long value = getter.apply(entry.getKey(), entry.getValue());
@@ -101,5 +101,6 @@ public class TwentyOne extends Template {
         return values;
     }
 
-    public record Monkey(ToLongBiFunction<Long, Long> op, String first, String second, long value) {}
+    public record Monkey(ToLongBiFunction<Long, Long> op, String first, String second, long value) {
+    }
 }

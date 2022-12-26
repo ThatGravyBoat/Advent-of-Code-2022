@@ -4,7 +4,9 @@ import tech.thatgravyboat.aoc.templates.Template;
 import tech.thatgravyboat.aoc.utils.StringUtils;
 import tech.thatgravyboat.aoc.utils.Util;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class Three extends Template {
 
@@ -27,16 +29,10 @@ public class Three extends Template {
      */
     @Override
     public String partOne() {
-        int priority = 0;
-
-        for (String s : getInput()) {
-            int half = s.length() / 2;
-            Set<Character> intersection = Util.intersection(StringUtils.toSet(s.substring(0, half)), StringUtils.toSet(s.substring(half)));
-            for (Character c : intersection) {
-                priority += INDEXES.indexOf(c);
-            }
-        }
-        return String.valueOf(priority);
+        Stream<List<String>> intersections = getInput()
+                .stream()
+                .map(line -> List.of(line.substring(0, line.length() / 2), line.substring(line.length() / 2)));
+        return Integer.toString(solve(intersections));
     }
 
     /**
@@ -50,14 +46,15 @@ public class Three extends Template {
      */
     @Override
     public String partTwo() {
-        int priority = 0;
-        for (List<String> s : Util.groupLists(getInput(), 3)) {
-            Set<Character> intersection = Util.intersection(StringUtils.toSet(s.get(0)), StringUtils.toSet(s.get(1)), StringUtils.toSet(s.get(2)));
-            for (Character c : intersection) {
-                priority += INDEXES.indexOf(c);
-                break;
-            }
-        }
-        return String.valueOf(priority);
+        return Integer.toString(solve(Util.groupLists(getInput(), 3).stream()));
+    }
+
+    private int solve(Stream<List<String>> intersections) {
+        return intersections
+                .map(line -> line.stream().map(StringUtils::toSet).toList())
+                .map(Util::intersection)
+                .flatMap(Collection::stream)
+                .mapToInt(INDEXES::indexOf)
+                .sum();
     }
 }

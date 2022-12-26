@@ -1,12 +1,12 @@
 package tech.thatgravyboat.aoc.days;
 
 import tech.thatgravyboat.aoc.templates.Template;
-import tech.thatgravyboat.aoc.utils.IntMatcher;
+import tech.thatgravyboat.aoc.utils.Pair;
+import tech.thatgravyboat.aoc.utils.Range;
+import tech.thatgravyboat.aoc.utils.Util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 public class Four extends Template {
@@ -17,7 +17,7 @@ public class Four extends Template {
 
     private static final Pattern PATTERN = Pattern.compile("(\\d+)-(\\d+),(\\d+)-(\\d+)");
 
-    private final List<Range[]> sections = new ArrayList<>();
+    private final List<Pair<Range, Range>> sections = new ArrayList<>();
 
     /**
      * Loop through each line of the input match the pattern.
@@ -26,13 +26,10 @@ public class Four extends Template {
      */
     @Override
     public void loadData(List<String> input) {
-        for (String s : input) {
-            IntMatcher matcher = IntMatcher.find(PATTERN, s);
-            sections.add(new Range[]{
+        sections.addAll(Util.findInt(PATTERN, input, matcher -> new Pair<>(
                 new Range(matcher.group(1), matcher.group(2)),
                 new Range(matcher.group(3), matcher.group(4))
-            });
-        }
+        )));
     }
 
     /**
@@ -44,13 +41,10 @@ public class Four extends Template {
      */
     @Override
     public String partOne() {
-        int count = 0;
-        for (Range[] section : sections) {
-            if (section[0].inRange(section[1]) || section[1].inRange(section[0])) {
-                count++;
-            }
-        }
-        return Integer.toString(count);
+        return Integer.toString(sections.stream()
+                .filter(section -> Range.isEitherASubsetOfTheOther(section.left(), section.right()))
+                .mapToInt(s -> 1)
+                .sum());
     }
 
     /**
@@ -62,30 +56,9 @@ public class Four extends Template {
      */
     @Override
     public String partTwo() {
-        int count = 0;
-        for (Range[] section : sections) {
-            Set<Integer> first = section[0].getAsSet();
-            first.retainAll(section[1].getAsSet());
-            if (!first.isEmpty()) {
-                count++;
-            }
-        }
-        return Integer.toString(count);
-    }
-
-    private record Range(int start, int end) {
-
-        private Set<Integer> getAsSet() {
-            Set<Integer> set = new HashSet<>();
-            for (int i = start; i <= end; i++) {
-                set.add(i);
-            }
-            return set;
-        }
-
-        public boolean inRange(Range value) {
-            return value.start >= start && value.start <= end && value.end >= start && value.end <= end;
-        }
-
+        return Integer.toString(sections.stream()
+                .filter(section -> section.left().intersects(section.right()))
+                .mapToInt(s -> 1)
+                .sum());
     }
 }

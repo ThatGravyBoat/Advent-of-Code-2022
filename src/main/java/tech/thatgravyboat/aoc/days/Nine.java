@@ -3,73 +3,38 @@ package tech.thatgravyboat.aoc.days;
 import tech.thatgravyboat.aoc.templates.Template;
 import tech.thatgravyboat.aoc.utils.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class Nine extends Template {
 
     private static final Pattern PATTERN = Pattern.compile("([DRUL]) (\\d+)");
+    private static final Map<String, Vec2i> DIRECTIONS = Map.of(
+            "U", Vec2i.of(0, 1),
+            "D", Vec2i.of(0, -1),
+            "L", Vec2i.of(-1, 0),
+            "R", Vec2i.of(1, 0)
+    );
 
     public static void main(String[] args) {
         new Nine().load(9);
     }
 
-    private final List<Pair<Direction, Integer>> moves = new ArrayList<>();
+    private final List<Pair<Vec2i, Integer>> moves = new ArrayList<>();
 
     @Override
     protected void onInputLoaded() {
-        for (String s : getInput()) {
-            IntMatcher matcher = IntMatcher.find(PATTERN, s);
-            switch (matcher.getMatcher().group(1)) {
-                case "L" -> moves.add(new Pair<>(Direction.LEFT, matcher.group(2)));
-                case "R" -> moves.add(new Pair<>(Direction.RIGHT, matcher.group(2)));
-                case "U" -> moves.add(new Pair<>(Direction.UP, matcher.group(2)));
-                default -> moves.add(new Pair<>(Direction.DOWN, matcher.group(2)));
-            }
-        }
+        moves.addAll(Util.findInt(PATTERN, getInput(), matcher -> new Pair<>(DIRECTIONS.get(matcher.getMatcher().group(1)), matcher.group(2))));
     }
 
-    /**
-     * Create a head and tail.
-     * <br>
-     * Loop through the moves.
-     * <br>
-     * For each move, repeat the move the amount of times.
-     * <br>
-     * Copy the head and move it in the direction of the move.
-     * <br>
-     * Check if distance sqrt is greater than 1, if so then set tail to head.
-     * <br>
-     * Set the head to the new head which is the copy.
-     * <br>
-     * Add the tail to the visited set.
-     */
     @Override
     public String partOne() {
-        Set<Vec2i> visited = new HashSet<>();
+        return Integer.toString(solve(1));
+    }
 
-        Vec2i.Mutable head = new Vec2i.Mutable(0, 0);
-        Vec2i.Mutable tail = new Vec2i.Mutable(0, 0);
-
-        for (var move : moves) {
-            Util.repeat(move.right(), () -> {
-                Vec2i next = switch (move.left()) {
-                    case UP -> head.toImmutable().add(0, 1);
-                    case DOWN -> head.toImmutable().add(0, -1);
-                    case LEFT -> head.toImmutable().add(-1, 0);
-                    case RIGHT -> head.toImmutable().add(1, 0);
-                };
-                if (next.distSqrt(tail) > 1) {
-                    tail.set(head);
-                }
-                head.set(next);
-                visited.add(tail.toImmutable());
-            });
-        }
-        return Integer.toString(visited.size());
+    @Override
+    public String partTwo() {
+        return Integer.toString(solve(9));
     }
 
     /**
@@ -91,42 +56,34 @@ public class Nine extends Template {
      * <br>
      * After looping through the rope add the last tail to the visited set.
      */
-    @Override
-    public String partTwo() {
+    private int solve(int length) {
         Set<Vec2i> visited = new HashSet<>();
 
-        List<Vec2i> rope = Util.listFill(10, () -> new Vec2i.Mutable(0, 0));
+        List<Vec2i> rope = Util.listFill(length + 1, () -> new Vec2i.Mutable(0, 0));
 
         for (var move : moves) {
             for (int i = 0; i < move.right(); i++) {
-                switch (move.left()) {
-                    case UP -> rope.get(0).add(0, 1);
-                    case DOWN -> rope.get(0).add(0, -1);
-                    case LEFT -> rope.get(0).add(-1, 0);
-                    case RIGHT -> rope.get(0).add(1, 0);
-                }
+                rope.get(0).add(move.left());
 
                 for (int j = 1; j < rope.size(); j++) {
-                    Vec2i head = rope.get(j - 1);
-                    Vec2i tail = rope.get(j);
+                    Vec2i last = rope.get(j - 1);
+                    Vec2i current = rope.get(j);
 
-                    if (head.equals(tail)) continue;
+                    if (last.equals(current)) continue;
 
-                    if(head.xDiff(tail) == 2 || head.yDiff(tail) == 2) {
+                    final int xDiff = last.x() - current.x();
+                    final int yDiff = last.y() - current.y();
+
+                    if (Math.max(Math.abs(xDiff), Math.abs(yDiff)) == 2) {
                         //We do it like this because we still need it to move on a 1 diff if another axis is 2
-                        if (!head.isEqual(tail, Axis.X)) {
-                            tail.add(head.x() > tail.x() ? new Vec2i(1, 0) : new Vec2i(-1, 0));
-                        }
-                        if (!head.isEqual(tail, Axis.Y)) {
-                            tail.add(head.y() > tail.y() ? new Vec2i(0, 1) : new Vec2i(0, -1));
-                        }
+                        current.add(Integer.signum(xDiff), Integer.signum(yDiff));
                     }
                 }
 
-                visited.add(rope.get(9).toImmutable());
+                visited.add(rope.get(length).toImmutable());
             }
         }
 
-        return Integer.toString(visited.size());
+        return visited.size();
     }
 }

@@ -1,9 +1,8 @@
 package tech.thatgravyboat.aoc.utils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 public class Range implements Comparable<Range> {
 
@@ -31,24 +30,16 @@ public class Range implements Comparable<Range> {
         return i >= min && i <= max;
     }
 
+    public boolean contains(Range range) {
+        return contains(range.min) && contains(range.max);
+    }
+
     public boolean intersects(Range other) {
         return contains(other.min) || contains(other.max) || other.contains(min) || other.contains(max);
     }
 
-    public int[] toArray() {
-        int[] array = new int[max - min + 1];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = min + i;
-        }
-        return array;
-    }
-
     public List<Integer> toList() {
-        List<Integer> list = new ArrayList<>();
-        for (int i = min; i <= max; i++) {
-            list.add(i);
-        }
-        return list;
+        return IntStream.range(min, max + 1).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 
     public void forEach(Consumer<Integer> consumer) {
@@ -58,5 +49,9 @@ public class Range implements Comparable<Range> {
     @Override
     public int compareTo(Range o) {
         return Comparator.comparingInt(Range::min).thenComparingInt(Range::max).compare(this, o);
+    }
+
+    public static boolean isEitherASubsetOfTheOther(Range one, Range two) {
+        return one.contains(two) || two.contains(one);
     }
 }

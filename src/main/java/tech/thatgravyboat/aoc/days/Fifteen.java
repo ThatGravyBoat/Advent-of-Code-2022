@@ -1,5 +1,7 @@
 package tech.thatgravyboat.aoc.days;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import tech.thatgravyboat.aoc.templates.Template;
 import tech.thatgravyboat.aoc.utils.IntMatcher;
 import tech.thatgravyboat.aoc.utils.Range;
@@ -19,14 +21,14 @@ public class Fifteen extends Template {
     }
 
     private final Map<Vec2i, Vec2i> positions = new HashMap<>();
-    private final Map<Vec2i, Integer> distances = new HashMap<>();
+    private final Object2IntMap<Vec2i> distances = new Object2IntOpenHashMap<>();
 
     @Override
     protected void onInputLoaded() {
-        for (IntMatcher match : Util.find(PATTERN, getInput())) {
+        for (IntMatcher match : Util.findInt(PATTERN, getInput())) {
             positions.put(
-                new Vec2i(match.group(1), match.group(2)),
-                new Vec2i(match.group(3), match.group(4))
+                    new Vec2i(match.group(1), match.group(2)),
+                    new Vec2i(match.group(3), match.group(4))
             );
         }
         positions.forEach((pos, beacon) -> distances.put(pos, pos.distManhattan(beacon)));
@@ -38,7 +40,7 @@ public class Fifteen extends Template {
 
         List<Range> ranges = getRange(y);
 
-        HashSet<Vec2i> set = new HashSet<>();
+        Set<Vec2i> set = new HashSet<>();
         ranges.forEach(range -> range.forEach(i -> set.add(new Vec2i(i, y))));
         set.removeAll(positions.values());
         return Integer.toString(set.size());
@@ -51,17 +53,13 @@ public class Fifteen extends Template {
         for (int i = 0; i <= 4000000; i++) {
             int max = -1;
             for (Range range : getRange(i)) {
-                if (max == -1) {
-                    max = range.max();
+                if (max == -1 || max + 1 >= range.min()) {
+                    max = Math.max(max, range.max());
                 } else {
-                    if (max + 1 < range.min()) {
-                        return maxRange
+                    return maxRange
                             .multiply(BigInteger.valueOf(max + 1))
                             .add(BigInteger.valueOf(i))
                             .toString();
-                    } else {
-                        max = Math.max(max, range.max());
-                    }
                 }
             }
         }
@@ -71,12 +69,12 @@ public class Fifteen extends Template {
 
     private List<Range> getRange(int y) {
         List<Range> ranges = new ArrayList<>();
-        distances.forEach((pos, dist) -> {
-            int range = dist - Math.abs(y - pos.y());
+        for (Vec2i pos : positions.keySet()) {
+            final int range = distances.getInt(pos) - Math.abs(y - pos.y());
             if (range >= 0) {
                 ranges.add(new Range(pos.x() - range, pos.x() + range));
             }
-        });
+        }
         ranges.sort(Range::compareTo);
         return ranges;
     }

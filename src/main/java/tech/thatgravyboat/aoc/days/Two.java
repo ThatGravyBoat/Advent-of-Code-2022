@@ -1,11 +1,15 @@
 package tech.thatgravyboat.aoc.days;
 
 import tech.thatgravyboat.aoc.templates.Template;
+import tech.thatgravyboat.aoc.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Two extends Template {
+
+    private static final Pattern PATTERN = Pattern.compile("([A-Z]) ([A-Z])");
 
     private static final int ROCK = 1;
     private static final int PAPER = 2;
@@ -19,37 +23,36 @@ public class Two extends Template {
         new Two().load(2);
     }
 
-    private final List<String[]> moves = new ArrayList<>();
+    private final List<Move> moves = new ArrayList<>();
 
     /**
      * Loop through the input and split the moves into an array of 2 strings with
      * the first being the players move and the second being our input.
      */
     @Override
-    public void loadData(List<String> input) {
-        for (String s : input) {
-            moves.add(s.split(" "));
-        }
+    protected void onInputLoaded() {
+        moves.addAll(Util.find(PATTERN, getInput(), matcher -> new Move(matcher.group(1), matcher.group(2))));
     }
+
 
     @Override
     public String partOne() {
         int score = 0;
-        for (String[] split : moves) {
-            score += switch (split[0]) {
-                case "A" -> switch (split[1]) {
+        for (Move split : moves) {
+            score += switch (split.opponent()) {
+                case "A" -> switch (split.other()) {
                     case "X" -> ROCK + DRAW;
                     case "Y" -> PAPER + WIN;
                     case "Z" -> SCISSORS + LOSE;
                     default -> 0;
                 };
-                case "B" -> switch (split[1]) {
+                case "B" -> switch (split.other()) {
                     case "X" -> ROCK + LOSE;
                     case "Y" -> PAPER + DRAW;
                     case "Z" -> SCISSORS + WIN;
                     default -> 0;
                 };
-                case "C" -> switch (split[1]) {
+                case "C" -> switch (split.other()) {
                     case "X" -> ROCK + WIN;
                     case "Y" -> PAPER + LOSE;
                     case "Z" -> SCISSORS + DRAW;
@@ -65,21 +68,21 @@ public class Two extends Template {
     @Override
     public String partTwo() {
         int score = 0;
-        for (String[] split : moves) {
-            score += switch (split[0]) {
-                case "A" -> switch (split[1]) {
+        for (Move split : moves) {
+            score += switch (split.opponent()) {
+                case "A" -> switch (split.other()) {
                     case "X" -> SCISSORS + LOSE;
                     case "Y" -> ROCK + DRAW;
                     case "Z" -> PAPER + WIN;
                     default -> 0;
                 };
-                case "B" -> switch (split[1]) {
+                case "B" -> switch (split.other()) {
                     case "X" -> ROCK + LOSE;
                     case "Y" -> PAPER + DRAW;
                     case "Z" -> SCISSORS + WIN;
                     default -> 0;
                 };
-                case "C" -> switch (split[1]) {
+                case "C" -> switch (split.other()) {
                     case "X" -> PAPER + LOSE;
                     case "Y" -> SCISSORS + DRAW;
                     case "Z" -> ROCK + WIN;
@@ -90,5 +93,9 @@ public class Two extends Template {
         }
 
         return Integer.toString(score);
+    }
+
+    public record Move(String opponent, String other) {
+
     }
 }

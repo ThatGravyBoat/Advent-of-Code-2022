@@ -10,11 +10,7 @@ public class TwentyFive extends Template {
 
     @Override
     public String partOne() {
-        long total = 0;
-        for (String s : getInput()) {
-            total += fromSNAFU(s);
-        }
-        return toSNAFU(total);
+        return toSNAFU(getInput().stream().mapToLong(TwentyFive::fromSNAFU).sum());
     }
 
     @Override
@@ -53,8 +49,6 @@ public class TwentyFive extends Template {
             };
         }
         return output.reverse().toString();
-
-
     }
 }
 

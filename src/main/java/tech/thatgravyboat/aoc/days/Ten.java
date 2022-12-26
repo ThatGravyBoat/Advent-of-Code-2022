@@ -66,7 +66,8 @@ public class Ten extends Template {
         for (String s : getInput()) {
             IntMatcher intLine = IntMatcher.find(PATTERN, s);
             switch (intLine.getMatcher().group(1)) {
-                case "addx" -> instructions.add(new Instruction(OperationType.ADDX, intLine.group(2), new AtomicInteger(2)));
+                case "addx" ->
+                        instructions.add(new Instruction(OperationType.ADDX, intLine.group(2), new AtomicInteger(2)));
                 case "noop" -> instructions.add(new Instruction(OperationType.NOOP, 0, new AtomicInteger(1)));
                 default -> throw new IllegalStateException("Unexpected value");
             }

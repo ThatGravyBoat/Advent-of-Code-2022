@@ -21,7 +21,7 @@ public class Sixteen extends Template {
 
     @Override
     protected void onInputLoaded() {
-        Util.find(PATTERN, getInput()).forEach(match -> {
+        Util.findInt(PATTERN, getInput()).forEach(match -> {
             Matcher matcher = match.getMatcher();
             values.put(matcher.group(1), new Valve(matcher.group(1), match.group(2), List.of(matcher.group(3).split(", "))));
         });
@@ -56,16 +56,16 @@ public class Sixteen extends Template {
             }
 
             int totalFlow = state.flow() + state.opened().stream()
-                .map(values::get)
-                .mapToInt(Valve::flow)
-                .sum();
+                    .map(values::get)
+                    .mapToInt(Valve::flow)
+                    .sum();
 
             if (valve.flow() != 0 && !state.opened().contains(state.id())) {
                 states.add(new State(
-                    time,
-                    state.id(),
-                    totalFlow + flow,
-                    Util.copyAndAdd(state.opened(), state.id())
+                        time,
+                        state.id(),
+                        totalFlow + flow,
+                        Util.copyAndAdd(state.opened(), state.id())
                 ));
             }
 
@@ -75,9 +75,9 @@ public class Sixteen extends Template {
         }
 
         return Integer.toString(finished.stream()
-            .mapToInt(State::flow)
-            .max()
-            .orElseThrow());
+                .mapToInt(State::flow)
+                .max()
+                .orElseThrow());
         //Works for example but not actual input, IDK what's wrong.
     }
 
@@ -86,16 +86,20 @@ public class Sixteen extends Template {
         return null;
     }
 
-    public record Valve(String id, int flow, List<String> tunnels) {}
-    public record State(int time, String id, int flow, List<String> opened) {
+    public record Valve(String id, int flow, List<String> tunnels) {
+    }
+
+    public record State(int time, String id, int flow, Set<String> opened) {
 
         public State(Valve valve) {
-            this(0, valve.id(), valve.flow(), new ArrayList<>());
+            this(0, valve.id(), valve.flow(), new HashSet<>());
         }
 
         public PathNote note() {
             return new PathNote(time(), id());
         }
     }
-    public record PathNote(int time, String id) {}
+
+    public record PathNote(int time, String id) {
+    }
 }

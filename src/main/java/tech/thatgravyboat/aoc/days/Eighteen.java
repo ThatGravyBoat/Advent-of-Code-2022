@@ -1,10 +1,12 @@
 package tech.thatgravyboat.aoc.days;
 
 import tech.thatgravyboat.aoc.templates.Template;
-import tech.thatgravyboat.aoc.utils.*;
+import tech.thatgravyboat.aoc.utils.Direction3d;
+import tech.thatgravyboat.aoc.utils.IntArea;
+import tech.thatgravyboat.aoc.utils.Util;
+import tech.thatgravyboat.aoc.utils.Vec3i;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class Eighteen extends Template {
@@ -22,12 +24,12 @@ public class Eighteen extends Template {
 
     @Override
     protected void onInputLoaded() {
-        List<Vec3i> droplets = Util.find(PATTERN, getInput(), matcher -> new Vec3i(matcher.group(1), matcher.group(2), matcher.group(3)));
+        List<Vec3i> droplets = Util.findInt(PATTERN, getInput(), matcher -> new Vec3i(matcher.group(1), matcher.group(2), matcher.group(3)));
 
         area = new IntArea(
-            droplets.stream().mapToInt(Vec3i::x).max().orElseThrow() + 1,
-            droplets.stream().mapToInt(Vec3i::y).max().orElseThrow() + 1,
-            droplets.stream().mapToInt(Vec3i::z).max().orElseThrow() + 1
+                droplets.stream().mapToInt(Vec3i::x).max().orElseThrow() + 1,
+                droplets.stream().mapToInt(Vec3i::y).max().orElseThrow() + 1,
+                droplets.stream().mapToInt(Vec3i::z).max().orElseThrow() + 1
         );
         droplets.forEach(vec3i -> area.set(vec3i, DROPLET));
     }
@@ -45,30 +47,21 @@ public class Eighteen extends Template {
         Util.bsf(Vec3i.ZERO, (vec, queue) -> {
             this.area.set(vec, EXTERIOR_WATER);
             Direction3d.stream()
-                .map(vec::add)
-                .filter(pos -> this.area.safeGet(pos).orElse(-1) == WATER)
-                .forEach(queue::add);
+                    .map(vec::add)
+                    .filter(pos -> this.area.safeGet(pos).orElse(-1) == WATER)
+                    .forEach(queue::add);
         });
 
         return Integer.toString(solve(EXTERIOR_WATER));
     }
 
     public int solve(int target) {
-        AtomicInteger surfaceArea = new AtomicInteger();
-
-        area.forEach((x, y, z, value) -> {
-            // Loop through everything and if it's a droplet then calculate the surface area
-            if (value == DROPLET) {
-                Vec3i pos = new Vec3i(x, y, z);
-                // Loop through all directions and filter depending on the target
-                // And then increment depending on how many filtered directions there are
-                Direction3d.stream()
-                    .map(pos::add)
-                    .filter(pos2 -> area.safeGet(pos2).orElse(target) == target)
-                    .forEach(pos2 -> surfaceArea.getAndIncrement());
-            }
-        });
-
-        return surfaceArea.get();
+        return area.stream()
+                .filter(entry -> entry.value() == DROPLET)
+                .map(IntArea.AreaEntry::toVec3i)
+                .flatMap(vec -> Direction3d.stream().map(vec::add))
+                .filter(pos -> area.safeGet(pos).orElse(target) == target)
+                .mapToInt(x -> 1)
+                .sum();
     }
 }

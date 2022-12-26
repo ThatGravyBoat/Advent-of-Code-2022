@@ -45,50 +45,38 @@ public class Twelve extends Template {
 
     @Override
     public String partTwo() {
-        Set<Vec2i> possibleStarts = new HashSet<>();
-        grid.forEach((x, z, value) -> {
-            if (value == 1) {
-                possibleStarts.add(new Vec2i(x, z));
-            }
-        });
-        int min = Integer.MAX_VALUE;
-        for (Vec2i possibleStart : possibleStarts) {
-            int search = search(possibleStart);
-            if (search != -1 && search < min) {
-                min = search;
-            }
-        }
-        return Integer.toString(min);
+        return Integer.toString(grid.stream()
+                .filter(entry -> entry.value() == 1)
+                .map(IntGrid.GridEntry::toVec2i)
+                .mapToInt(this::search)
+                .filter(i -> i != -1)
+                .min()
+                .orElseThrow());
     }
 
     /**
      * Start BSF with extra logic for checking if it bounds of grid and if the next id is less than or equal to n + 1
      * <br>
-     * And a check for if the next position is the end and if the current one is valid to go to the end and if so escape and return the distance.
+     * And a check for if the next position is the end and if the value one is valid to go to the end and if so escape and return the distance.
      */
     private int search(Vec2i start) {
         Set<Vec2i> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
-        queue.add(new Node(start, grid.get(start.x(), start.y()), 0));
+        queue.add(new Node(start.toImmutable(), grid.get(start.x(), start.y()), 0));
 
         while (!queue.isEmpty()) {
-            Node node = queue.poll();
-            int current = node.currentValue();
-
+            final Node node = queue.poll();
             for (Vec2i value : node.directions()) {
 
-                if (visited.contains(value)) continue;
-
-                if (!grid.isWithinBounds(value.x(), value.y())) {
+                if (visited.contains(value) || !grid.isWithinBounds(value.x(), value.y())) {
                     continue;
                 }
 
-                int id = grid.get(value.x(), value.y());
-                if (value.equals(end)) {
-                    if ((current + 'a') >= 'y') {
+                final int id = grid.get(value.x(), value.y());
+                if (id <= node.value() + 1) {
+                    if (value.equals(end)) {
                         return node.steps() + 1;
                     }
-                } else if (id <= current + 1) {
                     visited.add(value);
                     queue.add(new Node(value, id, node.steps() + 1));
                 }
@@ -98,7 +86,7 @@ public class Twelve extends Template {
         return -1;
     }
 
-    public record Node(Vec2i pos, int currentValue, int steps) {
+    public record Node(Vec2i pos, int value, int steps) {
 
         public List<Vec2i> directions() {
             return List.of(pos.relative(Direction.LEFT), pos.relative(Direction.RIGHT), pos.relative(Direction.UP), pos.relative(Direction.DOWN));

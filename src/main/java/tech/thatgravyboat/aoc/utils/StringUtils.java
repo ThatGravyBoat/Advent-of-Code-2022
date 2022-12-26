@@ -1,15 +1,18 @@
 package tech.thatgravyboat.aoc.utils;
 
-import java.util.HashSet;
-import java.util.Set;
+import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
+import it.unimi.dsi.fastutil.chars.CharSet;
+
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public final class StringUtils {
 
-    private StringUtils() {}
+    private StringUtils() {
+    }
 
-    public static Set<Character> toSet(String s) {
-        return new HashSet<>(s.chars().mapToObj(c -> (char) c).toList());
+    public static CharSet toSet(String s) {
+        return new CharOpenHashSet(s.toCharArray());
     }
 
     public static String[] splitEveryX(String input, int x) {
@@ -21,7 +24,10 @@ public final class StringUtils {
         return output;
     }
 
-    public static <T> Collector<T, StringBuilder, StringBuilder> collectToString() {
-        return Collector.of(StringBuilder::new, StringBuilder::append, StringBuilder::append);
+    public static <T> Collector<T, StringBuilder, String> collectToString() {
+        return Collectors.collectingAndThen(
+                Collector.of(StringBuilder::new, StringBuilder::append, StringBuilder::append),
+                StringBuilder::toString
+        );
     }
 }

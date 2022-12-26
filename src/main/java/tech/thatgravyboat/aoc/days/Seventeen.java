@@ -12,11 +12,11 @@ import java.util.stream.Stream;
 public class Seventeen extends Template {
 
     private static final List<Shape> SHAPES = List.of(
-        Shape.of(new Vec2i(0,0), new Vec2i(1,0), new Vec2i(2,0), new Vec2i(3,0)),
-        Shape.of(new Vec2i(0,1), new Vec2i(1,1), new Vec2i(2,1), new Vec2i(1,2), new Vec2i(1,0)),
-        Shape.of(new Vec2i(0,0), new Vec2i(1,0), new Vec2i(2,0), new Vec2i(2,1), new Vec2i(2,2)),
-        Shape.of(new Vec2i(0,0), new Vec2i(0,1), new Vec2i(0,2), new Vec2i(0,3)),
-        Shape.of(new Vec2i(0,0), new Vec2i(0,1), new Vec2i(1,1), new Vec2i(1,0))
+            Shape.of(new Vec2i(0, 0), new Vec2i(1, 0), new Vec2i(2, 0), new Vec2i(3, 0)),
+            Shape.of(new Vec2i(0, 1), new Vec2i(1, 1), new Vec2i(2, 1), new Vec2i(1, 2), new Vec2i(1, 0)),
+            Shape.of(new Vec2i(0, 0), new Vec2i(1, 0), new Vec2i(2, 0), new Vec2i(2, 1), new Vec2i(2, 2)),
+            Shape.of(new Vec2i(0, 0), new Vec2i(0, 1), new Vec2i(0, 2), new Vec2i(0, 3)),
+            Shape.of(new Vec2i(0, 0), new Vec2i(0, 1), new Vec2i(1, 1), new Vec2i(1, 0))
     );
 
     public static void main(String[] args) {
@@ -86,9 +86,9 @@ public class Seventeen extends Template {
         public static Shape of(Vec2i... points) {
             var list = Arrays.stream(points).map(Vec2i::toImmutable).toList();
             return new Shape(
-                list,
-                new Range(list.stream().mapToInt(Vec2i::x).min().orElse(0), list.stream().mapToInt(Vec2i::x).max().orElse(0)),
-                new Range(list.stream().mapToInt(Vec2i::y).min().orElse(0), list.stream().mapToInt(Vec2i::y).max().orElse(0))
+                    list,
+                    new Range(list.stream().mapToInt(Vec2i::x).min().orElse(0), list.stream().mapToInt(Vec2i::x).max().orElse(0)),
+                    new Range(list.stream().mapToInt(Vec2i::y).min().orElse(0), list.stream().mapToInt(Vec2i::y).max().orElse(0))
             );
         }
 

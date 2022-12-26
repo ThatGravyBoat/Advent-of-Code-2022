@@ -6,11 +6,14 @@ import tech.thatgravyboat.aoc.utils.Pair;
 import tech.thatgravyboat.aoc.utils.Util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class Thirteen extends Template {
+
+    private static final Pattern PATTERN = Pattern.compile("-?\\d+");
 
     public static void main(String[] args) {
         new Thirteen().load(13);
@@ -22,8 +25,8 @@ public class Thirteen extends Template {
     protected void onInputLoaded() {
         for (List<String> pair : Util.groupLists(getInput(), 3)) {
             values.add(new Pair<>(
-                parse(pair.get(0), 0, '\0').left(),
-                parse(pair.get(1), 0, '\0').left()
+                    parse(pair.get(0), 0, '\0').left(),
+                    parse(pair.get(1), 0, '\0').left()
             ));
         }
     }
@@ -33,7 +36,7 @@ public class Thirteen extends Template {
         int sum = 0;
         for (int i = 0; i < values.size(); i++) {
             if (check(values.get(i).left(), values.get(i).right()) == 1) {
-                sum+=i + 1;
+                sum += i + 1;
             }
         }
         return Integer.toString(sum);
@@ -43,7 +46,7 @@ public class Thirteen extends Template {
     public String partTwo() {
         Object divider1 = List.of(List.of(2));
         Object divider2 = List.of(List.of(6));
-        List<Object> values = Stream.concat(Stream.of(divider1, divider2), this.values.stream().flatMap(pair -> pair.toList().stream()))
+        List<Object> values = Stream.concat(Stream.of(divider1, divider2), this.values.stream().map(Pair::toList).flatMap(Collection::stream))
                 .sorted(Thirteen::check)
                 .collect(Util.collectReverseList());
 
@@ -59,7 +62,7 @@ public class Thirteen extends Template {
     private static int check(Object first, Object second) {
         if (first instanceof List<?> list1 && second instanceof List<?> list2) {
             for (int i = 0; i < Math.min(list1.size(), list2.size()); i++) {
-                int check = check(list1.get(i), list2.get(i));
+                final int check = check(list1.get(i), list2.get(i));
                 if (check != 0) {
                     return check;
                 }
@@ -82,7 +85,7 @@ public class Thirteen extends Template {
         if (c == '[') {
             return parseArray(value, pos);
         } else if (Character.isDigit(c)) {
-            IntMatcher matcher = IntMatcher.find(Pattern.compile("-?\\d+"), value.substring(pos));
+            IntMatcher matcher = IntMatcher.find(PATTERN, value.substring(pos));
             return new Pair<>(matcher.group(), pos + matcher.end());
         } else if (c == end) {
             return new Pair<>(null, pos + 1);

@@ -18,7 +18,7 @@ public class Five extends Template {
         new Five().load(5);
     }
 
-    private static final Pattern MOVE_PATTERN = Pattern.compile("move (\\d+) from (\\d+) to (\\d+)");
+    private static final Pattern PATTERN = Pattern.compile("move (\\d+) from (\\d+) to (\\d+)");
 
     private final List<Move> moves = new ArrayList<>();
 
@@ -34,7 +34,7 @@ public class Five extends Template {
     @Override
     protected void onInputLoaded() {
         for (String s : getInput()) {
-            IntMatcher matcher = new IntMatcher(MOVE_PATTERN, s);
+            IntMatcher matcher = new IntMatcher(PATTERN, s);
             if (!matcher.find()) continue;
             moves.add(new Move(matcher.group(1), matcher.group(2), matcher.group(3)));
         }
@@ -54,9 +54,8 @@ public class Five extends Template {
         List<Stack<Character>> stacks = getInitialStack();
         moves.forEach(move -> Util.repeat(move.amount, () -> move.push(stacks, move.pop(stacks))));
         return stacks.stream()
-            .map(Stack::pop)
-            .collect(StringUtils.collectToString())
-            .toString();
+                .map(Stack::pop)
+                .collect(StringUtils.collectToString());
     }
 
     /**
@@ -78,14 +77,13 @@ public class Five extends Template {
     public String partTwo() {
         List<Stack<Character>> stacks = getInitialStack();
         moves.forEach(move -> IntStream.range(0, move.amount)
-            .mapToObj(i -> move.pop(stacks))
-            .collect(Util.collectReverseList())
-            .forEach(c -> move.push(stacks, c))
+                .mapToObj(i -> move.pop(stacks))
+                .collect(Util.collectReverseList())
+                .forEach(c -> move.push(stacks, c))
         );
         return stacks.stream()
                 .map(Stack::pop)
-                .collect(StringUtils.collectToString())
-                .toString();
+                .collect(StringUtils.collectToString());
     }
 
     /**

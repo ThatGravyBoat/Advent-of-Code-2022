@@ -1,10 +1,10 @@
 package tech.thatgravyboat.aoc.days;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import tech.thatgravyboat.aoc.templates.Template;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class One extends Template {
 
@@ -12,7 +12,7 @@ public class One extends Template {
         new One().load(1);
     }
 
-    private final List<Integer> elves = new ArrayList<>();
+    private final IntList elves = new IntArrayList();
 
     /**
      * Loop through the input and if a line is empty that means we have reached the end of the section,
@@ -44,7 +44,7 @@ public class One extends Template {
      */
     @Override
     public String partOne() {
-        return String.valueOf(this.elves.get(0));
+        return Integer.toString(this.elves.get(0));
     }
 
     /**
@@ -52,6 +52,6 @@ public class One extends Template {
      */
     @Override
     public String partTwo() {
-        return String.valueOf(this.elves.get(0) + this.elves.get(1) + this.elves.get(2));
+        return Integer.toString(this.elves.get(0) + this.elves.get(1) + this.elves.get(2));
     }
 }

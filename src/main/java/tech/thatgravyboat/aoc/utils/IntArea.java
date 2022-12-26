@@ -1,6 +1,9 @@
 package tech.thatgravyboat.aoc.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalInt;
+import java.util.stream.Stream;
 
 public class IntArea {
 
@@ -39,22 +42,6 @@ public class IntArea {
         return x >= 0 && x < cube.length && y >= 0 && y < cube[0].length && z >= 0 && z < cube[0][0].length;
     }
 
-    public int getWidth() {
-        return cube.length;
-    }
-
-    public int getHeight() {
-        return cube[0].length;
-    }
-
-    public int getDepth() {
-        return cube[0][0].length;
-    }
-
-    public int[][][] getCube() {
-        return cube;
-    }
-
     public void forEach(IntAreaConsumer consumer) {
         for (int x = 0; x < cube.length; x++) {
             int[][] yzList = cube[x];
@@ -67,8 +54,21 @@ public class IntArea {
         }
     }
 
+    public Stream<AreaEntry> stream() {
+        List<AreaEntry> entries = new ArrayList<>();
+        forEach((x, y, z, value) -> entries.add(new AreaEntry(x, y, z, value)));
+        return entries.stream();
+    }
+
     @FunctionalInterface
     public interface IntAreaConsumer {
         void accept(int x, int y, int z, int value);
+    }
+
+    public record AreaEntry(int x, int y, int z, int value) {
+
+        public Vec3i toVec3i() {
+            return new Vec3i(x, y, z);
+        }
     }
 }
